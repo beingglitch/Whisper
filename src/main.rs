@@ -6,11 +6,14 @@ use futures::StreamExt;
 use libp2p::{Multiaddr, StreamProtocol, Swarm, SwarmBuilder, noise, request_response::{self, ProtocolSupport}, swarm::SwarmEvent, tcp, yamux};
 use serde::{Deserialize, Serialize};
 
-use crate::handlers::env_handler;
+use crate::handlers::{env_handler, key_handler};
 
 #[tokio::main] 
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut swarm: Swarm<request_response::json::Behaviour<EnvRequest, EnvResponse>> = SwarmBuilder::with_new_identity()
+
+    let keypair = key_handler::check_or_create_keys()?;
+
+    let mut swarm: Swarm<request_response::json::Behaviour<EnvRequest, EnvResponse>> = SwarmBuilder::with_existing_identity(keypair)
         .with_tokio()
         .with_tcp(tcp::Config::default(), noise::Config::new, yamux::Config::default)?
         .with_behaviour(|_| request_response::json::Behaviour::new([(StreamProtocol::new("/env/1.0.0"), ProtocolSupport::Full)], request_response::Config::default()))?
@@ -18,8 +21,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             |cfg| cfg.with_idle_connection_timeout(Duration::from_secs(u64::MAX))
         )
         .build();
-
+    
+    println!("Local PeerID: {}", swarm.local_peer_id());
+    
     swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse()?)?;
+
 
     let mut dialer = false;
     if let Some(addr) = std::env::args().nth(1) {
@@ -48,7 +54,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 },
             SwarmEvent::Behaviour( request_response::Event::Message {
                 message: request_response::Message::Response { request_id, response }, ..}) => {
-                    println!("response: {response:?}")
+                    let env_path = ".env";
+                    env_handler::sync_env(Path::new(&env_path), response.env_variables)?;
+                    println!("Env Synced!")
                 },
             
             _ => {}

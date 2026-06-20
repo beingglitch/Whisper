@@ -29,7 +29,7 @@ pub fn sync_env(path: &Path, env_variables: HashMap<String, String>) -> Result<(
 fn write_env(path: &Path, env_variables: HashMap<String, String>) -> Result<(), Box<dyn std::error::Error>> {
     let mut f = fs::File::create(path)?;
 
-    let env_new_content = env_variables.iter().map(|(key, value)| "{key}={value}".to_string()).collect::<Vec<String>>().join("\n");
+    let env_new_content = env_variables.iter().map(|(key, value)| format!("{key}={value}")).collect::<Vec<String>>().join("\n");
 
     f.write_all(env_new_content.as_bytes())?;
 
