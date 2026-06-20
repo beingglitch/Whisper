@@ -1,15 +1,18 @@
-use std::collections::HashMap;
-use std::fs;
-use std::error::Error;
+use std::{collections::HashMap, fs, path::Path};
 
-// TODO: Add filter as well
-pub fn parse_and_return(path: &str) -> Result<HashMap<String, String>, Box<dyn Error>> {
-    let variables = fs::read_to_string(path)?.lines().map(|line| {
-        let mut split = line.splitn(2, '=');
-        let key = split.next().unwrap_or("").to_string();
-        let value = split.next().unwrap_or("").to_string();
-        (key, value)
-    }).collect::<HashMap<String, String>>();
+pub async fn read_env(path: &Path) -> Option<HashMap<String, String>> {
+    let env_string = fs::read_to_string(path).ok()?;
 
-    return Ok(variables);
+    let env_content: HashMap<String, String> = env_string
+        .lines()
+        .filter(|line| !line.is_empty())
+        .flat_map(|line| line.split_once("="))
+        .map(|(k, v)| (k.to_string(), v.to_string()))
+        .collect();
+
+    Some(env_content)
+}
+
+pub async fn sync_env(path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    Ok(())
 }
