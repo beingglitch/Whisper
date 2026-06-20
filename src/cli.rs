@@ -17,7 +17,10 @@ pub enum Commands {
 
     Status,
 
-    Sync,
+    Sync {
+       #[command(subcommand)]
+        command: SyncCommands,
+    },
 
     Peer {
         #[command(subcommand)]
@@ -34,3 +37,10 @@ pub enum PeerCommands {
     List
 }
 
+#[derive(Subcommand, Debug)]
+pub enum SyncCommands {
+    /// Push local .env to peers
+    Push,
+    /// Pull .env from peers
+    Pull,
+}

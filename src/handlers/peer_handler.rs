@@ -6,16 +6,16 @@ use toml;
 const PEERS_PATH: &str = ".whisper/peers.toml";
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Peer {
-    peer_id: String,
+pub struct Peer {
+    pub peer_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PeersConfig {
-    peers: Vec<Peer>,
+pub struct PeersConfig {
+    pub peers: Vec<Peer>,
 }
 
-fn read_peers() -> PeersConfig {
+pub fn read_peers() -> PeersConfig {
     let Ok(data) = fs::read_to_string(PEERS_PATH) else {
         return PeersConfig { peers: vec![]};
     };
@@ -28,13 +28,13 @@ fn write_peers(peers_config: PeersConfig) {
     std::fs::write(PEERS_PATH, data).unwrap();
 }
 
-fn check_duplicates(peer_id: &str, config: &PeersConfig) -> bool {
+pub fn check_peer(peer_id: &str, config: &PeersConfig) -> bool {
     config.peers.iter().any(|p| p.peer_id == peer_id)
 }
 
 pub fn add_peer(peer_id: String) {
     let mut peers_config = read_peers();
-    if check_duplicates(&peer_id, &peers_config) == true {
+    if check_peer(&peer_id, &peers_config) == true {
         println!("Peer {peer_id} already exist!");
         return;
     };
