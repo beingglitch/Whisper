@@ -42,7 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             SwarmEvent::Behaviour( request_response::Event::Message { 
                 message: request_response::Message::Request { request, channel, .. }, .. }) => {
                     let env_path = ".env";
-                    if let Some(env_variables) = env_handler::read_env(Path::new(&env_path)).await {
+                    if let Some(env_variables) = env_handler::read_env(Path::new(&env_path)) {
                         let _ = swarm.behaviour_mut().send_response(channel, EnvResponse { env_variables: env_variables});
                     };
                 },
