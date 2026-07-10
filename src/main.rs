@@ -22,6 +22,5 @@ async fn main() {
             cli::PeerCommands::Remove { peer_id } => peer_handler::remove_peer(peer_id),
             cli::PeerCommands::List => peer_handler::list_peers(),
         }
-        _ => {println!("print something main")}
     }
 }

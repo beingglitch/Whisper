@@ -2,7 +2,7 @@ use libp2p::identity::Keypair;
 
 const SECRETS_PATH: &str = ".whisper/identity.pk8";
 
-pub fn fetch_Identity() -> Option<Keypair> {
+pub fn fetch_identity() -> Option<Keypair> {
     
     if let Ok(bytes) = std::fs::read(SECRETS_PATH) {
         let keypair = Keypair::from_protobuf_encoding(&bytes).unwrap();
