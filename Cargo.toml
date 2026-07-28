@@ -4,10 +4,3 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-libp2p = { version = "0.54", features = ["noise", "ping", "tcp", "tokio", "yamux", "request-response", "json", "kad", "dns", "rsa"] }
-futures = "0.3.30"
-tokio = { version = "1.37.0", features = ["full"] }
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-serde = { version = "1.0.228", features = ["derive"] }
-clap = { version = "4", features = ["derive"] }
-toml = "1.1.2"
