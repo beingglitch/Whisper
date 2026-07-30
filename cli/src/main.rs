@@ -22,6 +22,7 @@ enum Commands {
 enum PeerCommands {
     Add(PeerArgs),
     Remove(PeerArgs),
+    List
 }
 
 #[derive(clap::Args, Debug)]
@@ -48,6 +49,9 @@ fn main() {
             }
             PeerCommands::Remove(PeerArgs { peer_id }) => {
                 whisper_core::remove_peer(peer_id);
+            }
+            PeerCommands::List => {
+                whisper_core::list_peer();
             }
         },
     }
